@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -7,6 +8,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -20,6 +24,8 @@ public class Init
 
     private boolean mouse1held;
     private boolean mouse3held;
+
+    private boolean drawingLine;
 
     int Initialize()
     {
@@ -42,7 +48,7 @@ public class Init
 
         while (!windowClosed) 
         {
-            Update();
+            Update(g);
             Render(panel, g, buffer);
         }
         return 0;
@@ -131,11 +137,15 @@ public class Init
         });
     }
 
-    void Update()
+    void Update(Graphics g)
     {
         if (mouse1held)
         {
-            System.out.println("left click held");
+            drawingLine = true;
+        }
+        else
+        {
+            drawingLine = false;
         }
         if (mouse3held)
         {
@@ -158,6 +168,18 @@ public class Init
         }
     }
 
+    void DrawLine(Graphics g)
+    {
+        List<Point> mouseCoordinates = new ArrayList<>();
+        for (int i = 1; i < mouseCoordinates.size(); i++) {
+            Point mousepoint = new Point(mousex, mousey);
+            mouseCoordinates.add(mousepoint);
+            Point p1 = mouseCoordinates.get(i - 1);
+            Point p2 = mouseCoordinates.get(i);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
+        }
+    }
+
     void Render(JPanel panel, Graphics g, BufferedImage buffer)
     {
         if (windowClosed == true)
@@ -170,6 +192,10 @@ public class Init
         g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
         g.setColor(Color.RED);
         g.fillOval(mousex, mousey, 6, 6);
+        if (drawingLine)
+        {
+            DrawLine(g);
+        }   
         panel.getGraphics().drawImage(buffer, 0, 0, panel);   
     }
 }
