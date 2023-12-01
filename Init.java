@@ -27,6 +27,8 @@ public class Init
 
     private boolean drawingLine;
 
+    List<Point> mouseCoordinates = new ArrayList<>();
+
     int Initialize()
     {
         System.out.println("creating frame");
@@ -142,10 +144,13 @@ public class Init
         if (mouse1held)
         {
             drawingLine = true;
+            Point currentPoint = new Point(mousex, mousey);
+            mouseCoordinates.add(currentPoint);
         }
         else
         {
             drawingLine = false;
+            mouseCoordinates.clear();
         }
         if (mouse3held)
         {
@@ -170,12 +175,12 @@ public class Init
 
     void DrawLine(Graphics g)
     {
-        List<Point> mouseCoordinates = new ArrayList<>();
         for (int i = 1; i < mouseCoordinates.size(); i++) {
             Point mousepoint = new Point(mousex, mousey);
             mouseCoordinates.add(mousepoint);
             Point p1 = mouseCoordinates.get(i - 1);
             Point p2 = mouseCoordinates.get(i);
+            g.setColor(Color.RED);
             g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
