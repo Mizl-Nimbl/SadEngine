@@ -27,11 +27,7 @@ public class Init
 
     private boolean drawingLine;
 
-    private List<Line> lines = new ArrayList<>();
-
-    private List<Point> mouseCoordinates = new ArrayList<>();
-
-    private Line currentLine;
+    List<Point> mouseCoordinates = new ArrayList<>();
 
     int Initialize()
     {
@@ -145,27 +141,16 @@ public class Init
 
     void Update(Graphics g)
     {
-        if (mouse1held) 
+        if (mouse1held)
         {
             drawingLine = true;
-
-            // Initialize a new line object only if it's the beginning of the line
-            if (currentLine == null) 
-            {
-                Line currentLine = new Line();
-                lines.add(currentLine);
-            }
-            if (currentLine != null)
-            {
-                Point currentPoint = new Point(mousex, mousey);
-                mouseCoordinates.add(currentPoint);
-                currentLine.points.add(currentPoint);
-            }
-        } 
-        else 
+            Point currentPoint = new Point(mousex, mousey);
+            mouseCoordinates.add(currentPoint);
+        }
+        else
         {
             drawingLine = false;
-            currentLine = null; // Reset the current line when the left mouse button is released
+            mouseCoordinates.clear();
         }
         if (mouse3held)
         {
@@ -188,42 +173,15 @@ public class Init
         }
     }
 
-    int getLines(Graphics g) {
-        int a = 1;
-        if (drawingLine) 
-        {
-            if (currentLine != null)
-            {
-                a = currentLine.points.size();
-            }
-        }
-        return a;
-    }
-
-    void DrawLines(Graphics g, int a) {
-        // Iterate through all lines and draw each one
-        if (currentLine != null)
-        {
-            if (!lines.isEmpty())
-            {
-                for (Line currentLine : lines) 
-                {
-
-                        List<Point> points = currentLine.points;
-                        for (int i = 1; i < points.size(); i++) 
-                        {
-                            Point p1 = points.get(i - 1);
-                            Point p2 = points.get(i);
-                            g.setColor(Color.RED);
-                            g.drawLine(p1.x, p1.y, p2.x, p2.y);
-                        }
-                }
-            }
-            if (drawingLine) 
-            {
-                g.setColor(Color.RED);
-                g.drawLine(currentLine.points.get(a - 2).x, currentLine.points.get(a - 2).y, mousex, mousey);
-            }
+    void DrawLine(Graphics g)
+    {
+        for (int i = 1; i < mouseCoordinates.size(); i++) {
+            Point mousepoint = new Point(mousex, mousey);
+            mouseCoordinates.add(mousepoint);
+            Point p1 = mouseCoordinates.get(i - 1);
+            Point p2 = mouseCoordinates.get(i);
+            g.setColor(Color.RED);
+            g.drawLine(p1.x, p1.y, p2.x, p2.y);
         }
     }
 
@@ -238,9 +196,11 @@ public class Init
         g.setColor(panel.getBackground());
         g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
         g.setColor(Color.RED);
-        g.fillOval(mousex, mousey, 6, 6); 
-        int a = getLines(g);
-        DrawLines(g, a);
+        g.fillOval(mousex, mousey, 6, 6);
+        if (drawingLine)
+        {
+            DrawLine(g);
+        }   
         panel.getGraphics().drawImage(buffer, 0, 0, panel);   
     }
 }
